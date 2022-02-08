@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import MainHeader from "./components/MainHeader/MainHeader";
+import Counter from "./components/Counter";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,6 +12,7 @@ function App() {
     const alreadyLogged = localStorage.getItem("logged");
     if (alreadyLogged === "1") {
       setIsLoggedIn(true);
+      console.log("isLoggedIn useEffect", isLoggedIn);
     }
   }, [isLoggedIn]);
 
@@ -19,7 +21,7 @@ function App() {
     // But it's just a dummy/ demo anyways
     localStorage.setItem("logged", "1");
     setIsLoggedIn(true);
-    console.log(isLoggedIn);
+    console.log("isLoggedIn", isLoggedIn);
   };
 
   const logoutHandler = () => {
@@ -30,6 +32,7 @@ function App() {
   return (
     <React.Fragment>
       <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+      {/* <Counter /> */}
       <main>
         {!isLoggedIn && <Login onLogin={loginHandler} />}
         {isLoggedIn && <Home onLogout={logoutHandler} />}

@@ -11,11 +11,36 @@ const Login = (props) => {
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  // No dependencies Array
+  // The code inside useEffect run the firs time and for each evaluation
+  // Evaluation enteredEmail, enteredPassword (cada keydown)
   useEffect(() => {
-    setTimeout(() => {
-      console.log("cheking form validity");
-      setPasswordIsValid(enteredPassword.trim().length > 6);
+    console.log("Run Allways");
+  });
+
+  // With an Array empty []
+  // the code inside useEffect run only once
+  useEffect(() => {
+    console.log("Run Once");
+  }, []);
+
+  // Dependecie array [ enteredEmail ]
+  // the code inside useEffect Run when evaluate a state => enteredEmail
+  useEffect(() => {
+    console.log("Run when evaluate a state => enteredEmail");
+  }, [enteredEmail]);
+
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      // console.log("cheking form validity");
+      setFormIsValid(
+        enteredEmail.includes("@") && enteredPassword.trim().length > 6
+      );
     }, 500);
+    return () => {
+      // console.log("clean up");
+      clearTimeout(identifier);
+    };
   }, [enteredEmail, enteredPassword]);
 
   const emailChangeHandler = (event) => {
@@ -30,9 +55,9 @@ const Login = (props) => {
   const passwordChangeHandler = (event) => {
     setEnteredPassword(event.target.value);
 
-    setFormIsValid(
-      event.target.value.trim().length > 6 && enteredEmail.includes("@")
-    );
+    // setFormIsValid(
+    //   event.target.value.trim().length > 6 && enteredEmail.includes("@")
+    // );
   };
 
   const validateEmailHandler = () => {
