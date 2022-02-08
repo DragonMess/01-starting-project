@@ -1,51 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
 
+// reducerFunction
+const emailReducer = (state, action) => {
+  // return newState
+  if (action === "USER_INPUT") {
+    return { value: action.val, isValid: action.val.includes("@") };
+  }
+  return { value: "", isValid: false };
+};
+
+const initialEmailState = { value: "", isValid: false };
+
 const Login = (props) => {
-  const [enteredEmail, setEnteredEmail] = useState("");
-  const [emailIsValid, setEmailIsValid] = useState();
+  // const [enteredEmail, setEnteredEmail] = useState("");
+  // const [emailIsValid, setEmailIsValid] = useState();
   const [enteredPassword, setEnteredPassword] = useState("");
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
-  // No dependencies Array
-  // The code inside useEffect run the firs time and for each evaluation
-  // Evaluation enteredEmail, enteredPassword (cada keydown)
-  useEffect(() => {
-    console.log("Run Allways");
-  });
+  const [emailState, dispatchEmail] = useReducer(
+    emailReducer,
+    initialEmailState
+  );
 
-  // With an Array empty []
-  // the code inside useEffect run only once
   useEffect(() => {
-    console.log("Run Once");
+    console.log("EFFECT IS RUNNING");
   }, []);
 
-  // Dependecie array [ enteredEmail ]
-  // the code inside useEffect Run when evaluate a state => enteredEmail
-  useEffect(() => {
-    console.log("Run when evaluate a state => enteredEmail");
-  }, [enteredEmail]);
-
-  useEffect(() => {
-    const identifier = setTimeout(() => {
-      // console.log("cheking form validity");
-      setFormIsValid(
-        enteredEmail.includes("@") && enteredPassword.trim().length > 6
-      );
-    }, 500);
-    return () => {
-      // console.log("clean up");
-      clearTimeout(identifier);
-    };
-  }, [enteredEmail, enteredPassword]);
-
   const emailChangeHandler = (event) => {
-    setEnteredEmail(event.target.value);
-    // vaon
+    // setEnteredEmail(event.target.value);
+    dispatchEmail({ type: "USER_INPUT", val: event.target.value });
 
     setFormIsValid(
       event.target.value.includes("@") && enteredPassword.trim().length > 6
@@ -55,13 +43,15 @@ const Login = (props) => {
   const passwordChangeHandler = (event) => {
     setEnteredPassword(event.target.value);
 
-    // setFormIsValid(
-    //   event.target.value.trim().length > 6 && enteredEmail.includes("@")
-    // );
+    setFormIsValid(
+      // event.target.value.trim().length > 6 && enteredEmail.includes("@")
+      emailState.isValid && enteredEmail.includes("@")
+    );
   };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes("@"));
+    // setEmailIsValid(enteredEmail.includes("@"));
+    setEmailIsValid(emailState.isValid);
   };
 
   const validatePasswordHandler = () => {
@@ -70,7 +60,8 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    // props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(emailState.value, enteredPassword);
   };
 
   return (
@@ -78,14 +69,16 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ""
+            // emailIsValid === false ? classes.invalid : ""
+            emailState.isValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            // value={enteredEmail}
+            value={emailState.value}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
