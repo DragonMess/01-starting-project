@@ -7,9 +7,14 @@ import Button from "../UI/Button/Button";
 // reducerFunction
 const emailReducer = (state, action) => {
   // return newState
-  if (action === "USER_INPUT") {
+  if (action.type === "USER_INPUT") {
     return { value: action.val, isValid: action.val.includes("@") };
   }
+  if (action.type === "INPUT_BLUR") {
+    // return { value: last state , isValid: state.value.includes("@") };
+    return { value: state.value, isValid: state.value.includes("@") };
+  }
+  // if the others if not true pass a initial state
   return { value: "", isValid: false };
 };
 
@@ -45,13 +50,14 @@ const Login = (props) => {
 
     setFormIsValid(
       // event.target.value.trim().length > 6 && enteredEmail.includes("@")
-      emailState.isValid && enteredEmail.includes("@")
+      emailState.isValid && event.target.value.trim().length
     );
   };
 
   const validateEmailHandler = () => {
-    // setEmailIsValid(enteredEmail.includes("@"));
-    setEmailIsValid(emailState.isValid);
+    // setEmailIsValid(event.target.includes("@"));
+    // input lost focus (don't need a value in dispatch object)
+    dispatchEmail({ type: "INPUT_BLUR" });
   };
 
   const validatePasswordHandler = () => {
@@ -63,7 +69,7 @@ const Login = (props) => {
     // props.onLogin(enteredEmail, enteredPassword);
     props.onLogin(emailState.value, enteredPassword);
   };
-
+  console.log(emailState.value);
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
